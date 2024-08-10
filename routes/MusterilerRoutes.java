@@ -109,8 +109,9 @@ public class MusterilerRoutes implements HttpHandler {
 
       boolean authenticated = loginController.authenticate(Eposta, Sifre);
       if (authenticated) {
+        Musteriler user = musterilerController.selectMusteriByEposta(Eposta);
         System.out.println("User authenticated successfully");
-        sendResponse(exchange, 200, "Login successful");
+        sendJsonResponse(exchange, 200, user);
       } else {
         System.out.println("Invalid MusteriID or Sifre");
         sendResponse(exchange, 401, "Invalid MusteriID or Sifre");

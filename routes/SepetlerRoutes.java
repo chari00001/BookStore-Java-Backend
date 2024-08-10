@@ -5,12 +5,15 @@ import com.sun.net.httpserver.HttpExchange;
 import com.google.gson.Gson;
 import controllers.SepetlerController;
 import model.Sepetler;
+import model.SepetWithKitap;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SepetlerRoutes implements HttpHandler {
   private Gson gson = new Gson();
@@ -42,6 +45,8 @@ public class SepetlerRoutes implements HttpHandler {
 
       if (pathParts.length == 3 && pathParts[2].matches("\\d+")) {
         handleGetById(exchange);
+      } else if (pathParts.length == 4 && pathParts[2].equals("musteri")) {
+        handleGetByUserId(exchange);
       } else {
         handleGet(exchange);
       }
@@ -67,23 +72,37 @@ public class SepetlerRoutes implements HttpHandler {
     sendJsonResponse(exchange, 200, cart);
   }
 
+  private void handleGetByUserId(HttpExchange exchange) throws IOException {
+    Integer id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[3]);
+
+    List<SepetWithKitap> carts = sepetlerController.selectSepetlerByUserId(id);
+    sendJsonResponse(exchange, 200, carts);
+  }
+
   private void handlePost(HttpExchange exchange) throws IOException {
-    Sepetler newCart = gson.fromJson(new InputStreamReader(exchange.getRequestBody()), Sepetler.class);
+    Sepetler newCart = new Gson().fromJson(new InputStreamReader(exchange.getRequestBody()), Sepetler.class);
+
     sepetlerController.insertSepet(newCart);
-    String response = "Kitap inserted successfully";
+    String response = "Sepet created successfully";
     sendResponse(exchange, 200, response);
   }
 
   private void handlePut(HttpExchange exchange) throws IOException {
-    Sepetler updatedBook = gson.fromJson(new InputStreamReader(exchange.getRequestBody()), Sepetler.class);
-    sepetlerController.updateSepet(updatedBook);
-    String response = "Kitap updated successfully";
+
+    String[] pathSegments = exchange.getRequestURI().getPath().split("/");
+
+    int itemId = Integer.parseInt(pathSegments[pathSegments.length - 1]);
+    Sepetler data = new Gson().fromJson(new InputStreamReader(exchange.getRequestBody()), Sepetler.class);
+
+    sepetlerController.updateSepet(itemId, data.getAdet());
+
+    String response = "Sepet updated successfully";
     sendResponse(exchange, 200, response);
   }
 
   private void handleDelete(HttpExchange exchange) throws IOException {
-    String query = exchange.getRequestURI().getQuery();
-    int id = Integer.parseInt(query.split("=")[1]);
+    int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
+
     sepetlerController.deleteSepet(id);
     String response = "Sepet deleted successfully";
     sendResponse(exchange, 200, response);

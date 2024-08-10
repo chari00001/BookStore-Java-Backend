@@ -82,4 +82,26 @@ public class MusterilerController {
             e.printStackTrace();
         }
     }
+
+    public Musteriler selectMusteriByEposta(String eposta) throws SQLException {
+        String query = "SELECT * FROM Musteriler WHERE Eposta = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, eposta);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int musteriID = rs.getInt("MusteriID");
+                String ad = rs.getString("Ad");
+                String soyad = rs.getString("Soyad");
+                String sifre = rs.getString("Sifre");
+                String adres = rs.getString("Adres");
+                String telefonNumarasi = rs.getString("TelefonNumarasi");
+                int isAdmin = rs.getInt("isAdmin");
+
+                return new Musteriler(musteriID, ad, soyad, eposta, sifre, adres, telefonNumarasi, isAdmin);
+            } else {
+                throw new SQLException("No customer found with the provided email."); // Throw an exception
+            }
+        }
+    }
+
 }
