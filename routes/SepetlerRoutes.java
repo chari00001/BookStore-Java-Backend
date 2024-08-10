@@ -7,13 +7,11 @@ import controllers.SepetlerController;
 import model.Sepetler;
 import model.SepetWithKitap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SepetlerRoutes implements HttpHandler {
   private Gson gson = new Gson();

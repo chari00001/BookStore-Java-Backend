@@ -6,6 +6,7 @@ import routes.KategorilerRoutes;
 import routes.MusterilerRoutes;
 import routes.YayinevleriRoutes;
 import routes.SepetlerRoutes;
+import routes.YorumlarRoutes;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -29,6 +30,7 @@ public class Main {
         server.createContext("/register", new MusterilerRoutes(connection)).getFilters().add(new CORSFilter());
         server.createContext("/yayinevleri", new YayinevleriRoutes(connection)).getFilters().add(new CORSFilter());
         server.createContext("/sepetler", new SepetlerRoutes(connection)).getFilters().add(new CORSFilter());
+        server.createContext("/yorumlar", new YorumlarRoutes(connection)).getFilters().add(new CORSFilter());
 
         server.setExecutor(null); // creates a default executor
         server.start();
