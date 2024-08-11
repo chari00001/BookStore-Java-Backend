@@ -40,6 +40,30 @@ public class MusterilerController {
         return musterilerList;
     }
 
+    public Musteriler selectMusteri(int id) {
+        String query = "SELECT * FROM Musteriler WHERE MusteriID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String ad = rs.getString("Ad");
+                String soyad = rs.getString("Soyad");
+                String eposta = rs.getString("Eposta");
+                String sifre = rs.getString("Sifre");
+                String adres = rs.getString("Adres");
+                String telefonNumarasi = rs.getString("TelefonNumarasi");
+                int isAdmin = rs.getInt("isAdmin");
+
+                return new Musteriler(id, ad, soyad, eposta, sifre, adres, telefonNumarasi, isAdmin);
+            } else {
+                throw new SQLException("No customer found with the provided ID."); // Throw an exception
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void insertMusteri(Musteriler musteri) {
         String sql = "INSERT INTO Musteriler (Ad, Soyad, Eposta, Sifre, Adres, TelefonNumarasi, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

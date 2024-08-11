@@ -45,12 +45,16 @@ public class MusterilerRoutes implements HttpHandler {
   public void handle(HttpExchange exchange) throws IOException {
     String method = exchange.getRequestMethod();
     String path = exchange.getRequestURI().getPath();
+    String[] pathParts = path.split("/");
 
     if (path.equals("/login") && method.equals("POST")) {
       handleLogin(exchange);
     } else if (path.equals("/register") && method.equals("POST")) {
       handleRegister(exchange);
     } else if (method.equals("GET")) {
+      if (pathParts.length == 3 && pathParts[2].matches("\\d+")) {
+        handleGetById(exchange);
+      }
       handleGet(exchange);
     } else if (method.equals("POST")) {
       handlePost(exchange);
@@ -66,6 +70,15 @@ public class MusterilerRoutes implements HttpHandler {
   private void handleGet(HttpExchange exchange) throws IOException {
     List<Musteriler> customers = musterilerController.selectMusteriler();
     sendJsonResponse(exchange, 200, customers);
+  }
+
+  private void handleGetById(HttpExchange exchange) throws IOException {
+    int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
+
+    System.out.println("ID: " + id);
+
+    Musteriler customer = musterilerController.selectMusteri(id);
+    sendJsonResponse(exchange, 200, customer);
   }
 
   private void handlePost(HttpExchange exchange) throws IOException {
